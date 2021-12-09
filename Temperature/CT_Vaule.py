@@ -9,7 +9,7 @@ from openpyxl import load_workbook
 from heapq import nsmallest
  
 #存檔為現在輸出的時間
-now_output_time = str(datetime.now().strftime('%Y-%m-%d %H-%M-%S'))+"output.csv"
+now_output_time = "Work"+str(datetime.now().strftime('%Y-%m-%d %H-%M-%S'))+".csv"
 # 讀取 Excel 檔案
 wb = openpyxl.load_workbook('work.xlsx')
 ws = wb.active
