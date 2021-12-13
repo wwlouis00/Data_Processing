@@ -1,6 +1,7 @@
 import time
 import datetime
 from datetime import datetime, timedelta
+from numpy.core.fromnumeric import std
 import pandas as pd
 import statistics
 import matplotlib.pyplot as plt
@@ -43,7 +44,7 @@ def get_StdDev_and_Avg():
     for i in range(0,16,1):
         well_array.append([df.loc[data, 'well_' + str(i+1)] for data in range(len(df.index))])
         del well_array[i][0]
-    stdDev = []
+    StdDev = []
     Avg = []
     for j in range(0,16):
         # df_current_well = df[f'well_{j+1}']
@@ -54,26 +55,29 @@ def get_StdDev_and_Avg():
             well_catch.append(int(well_array[j][k]))
         print('well_'+ str(j+1))
         sr = pd.Series(well_catch)
-        print("pandas stdDev: " + str(sr.std()))
-        stdDev.append(sr.std())
-        print("pandas mean: " + str(sr.mean()))
-        Avg.append(sr.mean())
-        print('-'*50)
-        #-------------------------------
-        # print("numpy stdDev: " + str(np.std(well_catch)))
-        # print("numpy mean: " + str(np.mean(well_catch)))
-        stdDev.append(np.mean(well_catch))
-        Avg.append(np.mean(well_catch)))
+        print("numpy stdDev: " + str(np.std(well_catch)))
+        print("numpy mean: " + str(np.mean(well_catch)))
+        StdDev.append(np.std(well_catch))
+        Avg.append(np.mean(well_catch))
         print("-"*100)
+    return StdDev, Avg
+# def normalize():
+#     baseline_array = []
+#     for i in range(0,16):
+#         df_current_well = df[f'well_{i+1}']
+#         baseline = df_current_well[10:32].mean()
+#         df_normalization[f'well_{i+1}'] = (df[f'well_{i+1}']-baseline)/baseline
 
-
-    return stdDev, Avg
-def normalize():
-    baseline_array = []
+def get_ct_threshold():
+    threshold_value = []
+    StdDev, Avg = get_StdDev_and_Avg()
     for i in range(0,16):
-        df_current_well = df[f'well_{i+1}']
-        baseline = df_current_well[10:32].mean()
-        baseline_array.append(baseline)
+        threshold_value.append(10*StdDev[i] + Avg[i])
+        print(f"well_{i+1}: StdDev is {StdDev[i]}, Avg is {Avg[i]}")
+    return threshold_value
+
+    
+        # baseline_array.append(baseline)
     # print(baseline_array)
 
     
@@ -90,7 +94,8 @@ def normalize():
 
 def main():
     get_StdDev_and_Avg()
-    normalize()
+    # normalize()
+    get_ct_threshold()
     # df.to_excel('CT_Value_' + now_output_time, encoding="utf_8_sig")
 
 
