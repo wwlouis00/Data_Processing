@@ -1,104 +1,74 @@
 import time
 import datetime
 from datetime import datetime, timedelta
+from numpy.core.fromnumeric import std
 import pandas as pd
 import statistics
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
+from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 import numpy as np
 from heapq import nsmallest
 
-# global variable
+from pandas.io.parsers import read_csv
+
+
+global df,df_ifc,df_normalization
+now_output_time = str(datetime.now().strftime('%Y-%m-%d %H-%M-%S'))+"output.xlsx"
+
 raw_file_path = "2021_10_22_16_26_07pos VTM A.csv"
 ifc_file_path = "cali_factor.csv"
+df = pd.read_csv(raw_file_path)
+ifc= pd.read_csv(ifc_file_path)
+df_normalization = df.copy()
+df.columns = ['time','temp_lid', 'temp_well', 'well_1', 'well_2', 'well_3', 'well_4', 'well_5', 'well_6', 'well_7', 'well_8','well_9', 'well_10', 'well_11', 'well_12', 'well_13', 'well_14', 'well_15', 'well_16']
 
-def get_accumulation_time():
-    df_time = df_normalization['time']
-    time_ori = datetime.strptime(df_time[0], "%H:%M:%S")
-    time_delta = []
-    for time in df_time:
-        time_now = datetime.strptime(time, "%H:%M:%S")
-        time_delta.append((time_now - time_ori).seconds/60)
-    df_normalization.insert(1, column="accumulation", value=time_delta)
+well_array = []
+ifc_array  = []
+for i in range(0,16,1):
+    well_array.append([df.loc[data, 'well_' + str(i+1)] for data in range(len(df.index))])
+    del well_array[i][0]
+    ifc_array.append([ifc.loc[data, 'well' + str(i+1)] for data in range(len(ifc.index))])
+print(ifc_array[0][0])
 
-def get_StdDev_and_Avg():
-    StdDev = []
-    Avg = []
-    for i in range(0, 16):
-        df_current_well = df_normalization[f'well{i+1}']
-        StdDev.append(df_current_well[8:30].std())
-        Avg.append(df_current_well[8:30].mean())
-    return StdDev, Avg
+StdDev = []
+Avg = []
+for i in range(0, 16):
+    # df_current_well = df_normalization[f'well_{i+1}']
+    well_catch = []
+    for j in range(10,33):
+        well_catch.append(int(well_array[i][j]))
+    StdDev.append(np.std(well_catch))
+    Avg.append(np.mean(well_catch))
+print(Avg[0])
 
-def normalize():
-    for i in range(0, 16):
-        df_current_well = df_raw[f'well{i+1}']
-        df_current_ifc = df_ifc[f'well{i+1}']
-        baseline = df_current_well[8:30].mean()
-        df_normalization[f'well{i+1}'] = (df_raw[f'well{i+1}']-baseline)/df_current_ifc[0] # normalized = (IF(t)-IF(b))/IFc
+for j in range(0,16):
+    test = []
+    baseline = Avg[j]
+    for k in range(0,len(df.index)-1,1):
+        test.append(int(well_array[j][k]) - baseline / int(ifc_array[j][0])) 
+    print(test)
+threshold_value = []
 
-def get_ct_threshold():
-    threshold_value = []
-    StdDev, Avg = get_StdDev_and_Avg()
-    for i in range(0, 16):
-        threshold_value.append(10*StdDev[i] + Avg[i])
-        print(f"Well {i+1}: StdDev is {StdDev[i]}, Avg is {Avg[i]}")
-    return threshold_value
 
-def get_ct_value(threshold_value):
-    Ct_value = []
-    for i in range(0, 16):
-        df_current_well = df_normalization[f'well{i+1}']
-        df_accumulation = df_normalization['accumulation']
-        print("\n")
-        print(df_current_well)
-        print(f"Threshold value: {threshold_value[i]}")
-        try:
-            for j, row in enumerate(df_current_well):
-                if row >= threshold_value[i]:
-                    print(f"row: {row}")
-                    thres_lower = df_current_well[j-1]
-                    thres_upper = df_current_well[j]                
-                    acc_time_lower = df_accumulation[j-1]
-                    acc_time_upper = df_accumulation[j+1]
-                    
-                    # linear regression
-                    x2 = acc_time_upper
-                    y2 = thres_upper
-                    x1 = acc_time_lower
-                    y1 = thres_lower
-                    y = threshold_value[i]
-                    x = (x2-x1)*(y-y1)/(y2-y1)+x1
+    
+        
+    
 
-                    Ct_value.append(round(x, 2))
-                    print(f"Ct of well{i+1} is {round(x, 2)}")
-                    break
 
-                # if there is no Ct_value availible
-                elif j == len(df_current_well)-1:
-                    Ct_value.append(99.99)
-                    print("Ct value is not available")
-        except Exception as e:
-            print(e)
-            Ct_value.append(99.99)
-            print("Ct value is not available")
 
-    return Ct_value
 
-def ct_calculation():
-    global df_raw, df_ifc, df_normalization
-    df_raw = pd.read_csv(raw_file_path)
-    df_ifc = pd.read_csv(ifc_file_path)
-    df_normalization = df_raw.copy()
 
-    get_accumulation_time()
-    normalize()
-    # df_normalization.to_csv("./result/normalization.csv", index=False)
-    threshold_value = get_ct_threshold()
-    Ct_value = get_ct_value(threshold_value)
-    return Ct_value
-def main():
-    ct_calculation()
+    # StdDev.append(df_current_well[8:30].std())
+    # Avg.append(df_current_well[8:30].mean())
 
+
+
+
+
+
+
+
+        
 
 
