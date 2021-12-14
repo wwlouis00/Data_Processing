@@ -6,13 +6,10 @@ import matplotlib.pyplot as plt
 
 from matplotlib.font_manager import FontProperties
 
- 
 
 # 指定使用字型和大小
 
 myfont = FontProperties(fname='D:/Programs/Lib/site-packages/matplotlib/mpl-data/fonts/ttf/msjh.ttc', size=40)
-
- 
 
 # 使用月份當做X軸資料
 
