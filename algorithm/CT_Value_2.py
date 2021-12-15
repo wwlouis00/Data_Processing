@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 # global variable
-raw_file_path = "2021_10_22_16_26_07pos VTM A.csv"
+raw_file_path = "2021_10_22_16_26_07pos.csv"
 ifc_file_path = "cali_factor.csv"
 
 def get_accumulation_time():
@@ -20,17 +20,17 @@ def get_StdDev_and_Avg():
     StdDev = []
     Avg = []
     for i in range(0, 16):
-        df_current_well = df_normalization[f'well{i+1}']
+        df_current_well = df_normalization[f'well_{i+1}']
         StdDev.append(df_current_well[8:30].std())
         Avg.append(df_current_well[8:30].mean())
     return StdDev, Avg
 
 def normalize():
     for i in range(0, 16):
-        df_current_well = df_raw[f'well{i+1}']
+        df_current_well = df_raw[f'well_{i+1}']
         df_current_ifc = df_ifc[f'well{i+1}']
         baseline = df_current_well[8:30].mean()
-        df_normalization[f'well{i+1}'] = (df_raw[f'well{i+1}']-baseline)/df_current_ifc[0] # normalized = (IF(t)-IF(b))/IFc
+        df_normalization[f'well{i+1}'] = (df_raw[f'well_{i+1}']-baseline)/df_current_ifc[0] # normalized = (IF(t)-IF(b))/IFc
 
 def get_ct_threshold():
     threshold_value = []
@@ -43,7 +43,7 @@ def get_ct_threshold():
 def get_ct_value(threshold_value):
     Ct_value = []
     for i in range(0, 16):
-        df_current_well = df_normalization[f'well{i+1}']
+        df_current_well = df_normalization[f'well_{i+1}']
         df_accumulation = df_normalization['accumulation']
         print("\n")
         print(df_current_well)
@@ -66,7 +66,7 @@ def get_ct_value(threshold_value):
                     x = (x2-x1)*(y-y1)/(y2-y1)+x1
 
                     Ct_value.append(round(x, 2))
-                    print(f"Ct of well{i+1} is {round(x, 2)}")
+                    print(f"Ct of well_{i+1} is {round(x, 2)}")
                     break
 
                 # if there is no Ct_value availible
@@ -92,4 +92,9 @@ def ct_calculation():
     threshold_value = get_ct_threshold()
     Ct_value = get_ct_value(threshold_value)
     return Ct_value
-ct_calculation()
+
+def main():
+    ct_calculation()
+if __name__ == '__main__':
+    main()
+    
