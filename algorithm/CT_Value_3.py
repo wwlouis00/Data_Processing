@@ -2,7 +2,6 @@ import pandas as pd
 import os
 from datetime import datetime
 
-
 # global variable
 raw_file_path = "2021_10_22_16_26_07pos.csv"
 ifc_file_path = "cali_factor.csv"
