@@ -6,6 +6,7 @@ from datetime import datetime
 raw_file_path = "2021_10_22_16_26_07pos.csv"
 ifc_file_path = "cali_factor.csv"
 
+
 def get_accumulation_time():
     df_time = df_normalization['time']
     time_ori = datetime.strptime(df_time[0], "%H:%M:%S")
@@ -20,22 +21,22 @@ def get_StdDev_and_Avg():
     Avg = []
     for i in range(0, 16):
         df_current_well = df_normalization[f'well_{i+1}']
-        StdDev.append(df_current_well[8:30].std())
-        Avg.append(df_current_well[8:30].mean())
+        StdDev.append(df_current_well[first_time:twice_time].std())
+        Avg.append(df_current_well[first_time:twice_time].mean())
     return StdDev, Avg
 
 def normalize():
     for i in range(0, 16):
         df_current_well = df_raw[f'well_{i+1}']
         df_current_ifc = df_ifc[f'well{i+1}']
-        baseline = df_current_well[8:30].mean()
+        baseline = df_current_well[first_time:twice_time].mean()
         df_normalization[f'well{i+1}'] = (df_raw[f'well_{i+1}']-baseline)/df_current_ifc[0] # normalized = (IF(t)-IF(b))/IFc
 
 def get_ct_threshold():
     threshold_value = []
     StdDev, Avg = get_StdDev_and_Avg()
     for i in range(0, 16):
-        threshold_value.append(10*StdDev[i] + Avg[i])
+        threshold_value.append(n_sd*StdDev[i] + Avg[i])
         print(f"Well {i+1}: StdDev is {StdDev[i]}, Avg is {Avg[i]}")
     return threshold_value
 
@@ -80,7 +81,11 @@ def get_ct_value(threshold_value):
     return Ct_value
 
 def ct_calculation():
-    global df_raw, df_ifc, df_normalization
+    global df_raw, df_ifc, df_normalization ,first_time,twice_time,n_sd
+    first_time = int(input("Input first time:   "))
+    twice_time = int(input("Input twice time:   "))
+    n_sd = int(input("Input twice time:   "))
+    # global twice_time = int(input("Input twice time:   "))     
     df_raw = pd.read_csv(raw_file_path)
     df_ifc = pd.read_csv(ifc_file_path)
     df_normalization = df_raw.copy()
@@ -90,6 +95,7 @@ def ct_calculation():
     # df_normalization.to_csv("./result/normalization.csv", index=False)
     threshold_value = get_ct_threshold()
     Ct_value = get_ct_value(threshold_value)
+    print(Ct_value)
     return Ct_value
 
 def main():

@@ -73,6 +73,7 @@ def get_ct_value(threshold_value):
                 elif j == len(df_current_well)-1:
                     Ct_value.append(99.99)
                     print("Ct value is not available")
+            # print(Ct_value)
         except Exception as e:
             print(e)
             Ct_value.append(99.99)
@@ -91,10 +92,15 @@ def ct_calculation():
     # df_normalization.to_csv("./result/normalization.csv", index=False)
     threshold_value = get_ct_threshold()
     Ct_value = get_ct_value(threshold_value)
+    print(Ct_value)
+    save_excel = pd.DataFrame({"CT_Value":[Ct_value[0]],"test":[Ct_value[1]]},index=["CH1","CH2"])
+    save_excel.to_excel("CT_Value_1.xlsx",encoding= "utf_8_sig")
+    
     return Ct_value
-
+    
 def main():
     ct_calculation()
+
 if __name__ == '__main__':
     main()
     
