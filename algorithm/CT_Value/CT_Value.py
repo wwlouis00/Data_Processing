@@ -96,6 +96,8 @@ def ct_calculation():
     threshold_value = get_ct_threshold()
     Ct_value = get_ct_value(threshold_value)
     print(Ct_value)
+    save_excel = pd.DataFrame({"CT_Value":[Ct_value[0]],"test":[Ct_value[1]]},index=["CH1","CH2"])
+    save_excel.to_excel("CT_Value_1.xlsx",encoding= "utf_8_sig")
     return Ct_value
 
 def main():
