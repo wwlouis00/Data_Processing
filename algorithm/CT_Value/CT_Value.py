@@ -99,7 +99,8 @@ def ct_calculation():
                                "well_9":[Ct_value[8]],"well_10":[Ct_value[9]],"well_11":[Ct_value[10]],"well_4":[Ct_value[11]],
                                "well_13":[Ct_value[12]],"well_14":[Ct_value[13]],"well_15":[Ct_value[14]],"well_16":[Ct_value[15]]}
     ,index=["CT_Value"])
-    save_excel.to_excel("CT_Value.xlsx",encoding= "utf_8_sig")
+    
+    save_excel.to_excel("./result/CT_Value.xlsx",encoding= "utf_8_sig")
     return Ct_value
 
 def main():
