@@ -84,20 +84,22 @@ def ct_calculation():
     global df_raw, df_ifc, df_normalization ,first_time,twice_time,n_sd
     first_time = int(input("Input first time:   "))
     twice_time = int(input("Input twice time:   "))
-    n_sd = int(input("Input twice time:   "))
-    # global twice_time = int(input("Input twice time:   "))     
+    n_sd = int(input("Input Std:   "))   
     df_raw = pd.read_csv(raw_file_path)
     df_ifc = pd.read_csv(ifc_file_path)
     df_normalization = df_raw.copy()
 
     get_accumulation_time()
     normalize()
-    # df_normalization.to_csv("./result/normalization.csv", index=False)
     threshold_value = get_ct_threshold()
     Ct_value = get_ct_value(threshold_value)
     print(Ct_value)
-    save_excel = pd.DataFrame({"CT_Value":[Ct_value[0]],"test":[Ct_value[1]]},index=["CH1","CH2"])
-    save_excel.to_excel("CT_Value_1.xlsx",encoding= "utf_8_sig")
+    save_excel = pd.DataFrame({"well_1":[Ct_value[0]],"well_2":[Ct_value[1]],"well_3":[Ct_value[2]],"well_4":[Ct_value[3]],
+                               "well_5":[Ct_value[4]],"well_6":[Ct_value[5]],"well_7":[Ct_value[6]],"well_8":[Ct_value[7]],
+                               "well_9":[Ct_value[8]],"well_10":[Ct_value[9]],"well_11":[Ct_value[10]],"well_4":[Ct_value[11]],
+                               "well_13":[Ct_value[12]],"well_14":[Ct_value[13]],"well_15":[Ct_value[14]],"well_16":[Ct_value[15]]}
+    ,index=["CT_Value"])
+    save_excel.to_excel("CT_Value.xlsx",encoding= "utf_8_sig")
     return Ct_value
 
 def main():
