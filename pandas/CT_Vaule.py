@@ -3,7 +3,6 @@ import time
 import datetime
 from datetime import datetime, timedelta
 import statistics
-from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 import numpy as np
 from openpyxl import load_workbook
 from heapq import nsmallest
@@ -87,10 +86,8 @@ def well():
         CT_final= gap_time_2 + time_2
         ws.cell(row = 10,column=well_row+40).value = CT_final
 
-
-
 def main():
     Set_time()
     well()
 main()
-wb.save("xlsx/"+now_output_time)
+wb.save(now_output_time)
