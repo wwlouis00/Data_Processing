@@ -6,6 +6,7 @@ import statistics
 import numpy as np
 from openpyxl import load_workbook
 from heapq import nsmallest
+from line_profiler import LineProfiler
  
 #存檔為現在輸出的時間
 now_output_time = "Work"+str(datetime.now().strftime('%Y-%m-%d %H-%M-%S'))+".csv"
@@ -29,7 +30,6 @@ def Set_time():
     #設置well欄位
     for time in range(2,79,1):
         ws.cell(row = time,column = 20).value = ws.cell(row=time,column=1).value
-        # ws.cell(row = time - 4,column = 40).value = ws.cell(row = time - 4,column = 20).value
 
     #累積時間欄位
     orgin_time = str(ws.cell(row = 2,column=20).value)
@@ -39,7 +39,7 @@ def Set_time():
         accumulation = datetime.strptime(a,"%H:%M:%S")
         delta = accumulation - d1
         ws.cell(row =time,column=21).value = delta.seconds /60
-
+# 
 def well():
     for well_row in range(2,18,1):
         ws.cell(row=1,column=well_row+20 ,value = "well" + str(well_row-1))#設好"Moving"對應欄位
@@ -59,12 +59,15 @@ def well():
         for mwell_row in range(3,15,1):
             well_gap = float(ws.cell(row = mwell_row,column= well_row +20).value)
             CT_threshold.append(well_gap)
+
         std = float(statistics.stdev(CT_threshold))
         aum = float(ws.cell(row=3,column= well_row + 20).value)
+
         for avg_row in range(3,14,1):
             aum = aum + ws.cell(row= avg_row+1,column= well_row +20).value
         aum_avg = aum / 10
         ws.cell(row = 2,column=well_row + 40).value = 10*std + aum_avg
+        
         #進行切線計算
         Everywell_th = []
         for k in range(2,75,1): 
@@ -89,5 +92,6 @@ def well():
 def main():
     Set_time()
     well()
+
 main()
 wb.save(now_output_time)
